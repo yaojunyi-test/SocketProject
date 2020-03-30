@@ -7,7 +7,7 @@
 
 #ifndef HEAD_H
 #define HEAD_H
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -15,5 +15,8 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <pthread.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <stdbool.h>
 #include <string.h>
 #endif
