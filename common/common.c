@@ -6,7 +6,41 @@
  ************************************************************************/
 
 #include "head.h"
+char *get_value(char *path, char *key) {
+    FILE *fp = NULL;
+    ssize_t nrd;  //用行的方式读配置文件
+    char *line = NULL, *sub = NULL;
+    extern char conf_ans[50];
+    size_t linecap;
+    if (path == NULL || key == NULL) {
+        fprintf(stderr, "Error in argument!\n");
+        return -1;
+    }
+    if ((fp = fopen(path, "r")) == NULL) {
+        perror("fopen");
+        return NULL;
+    }
 
+    while ((nrd = getline(&line, &linecap, fp)) != -1) {
+        if ((sub = strstr(line, key)) == NULL) 
+            continue;
+         else {
+             if (line[strlen(key)] == '=') {
+                 strncpy(conf_ans, sub + strlen(key) + 1, nrd - strlen(key) - 2);
+                 *(conf_ans + nrd - strlen(key) - 2) = '\0';
+                 break;
+             }
+        }
+    }
+    free(line);
+    fclose(fp);
+    if (sub == NULL) {
+        return NULL;
+    } 
+    return conf_ans;
+
+
+}
 
 void make_nonblock_ioctl(int fd) {
     unsigned long ul = 1; // 非阻塞
