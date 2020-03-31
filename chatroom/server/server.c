@@ -20,8 +20,20 @@ char *conf = "./server.conf";
 struct User *client;
 
 void *work(void *arg) {
-    printf("client login!\n");
-
+    int *sub = (int *)arg;
+    int client_fd = client[*sub].fd;
+    struct RecvMsg rmsg;
+    while (1) {
+        rmsg = chat_recv(client_fd);
+        if (rmsg.retval < 0) {
+            printf(PINK"Logout: "NONE" %s \n", client[*sub].name);
+            close(client_fd);
+            client[*sub].online = 0;
+            return NULL;
+        }
+        printf(BLUE"%s"NONE" : %s\n", rmsg.msg.from, rmsg.msg.message);
+    }
+    return NULL;
 }
 
 int find_sub() {
@@ -66,15 +78,24 @@ int main() {
         
         if (check_online(recvmsg.msg.from)) {
             //拒绝连接
-        } else {
-            int sub;
-            sub = find_sub();
-            client[sub].online = 1; // 1是在线
-            client[sub].fd = fd;
-            strcpy(client[sub].name, recvmsg.msg.from);
-            pthread_create(&client[sub].tid, NULL, work, NULL);
+            msg.flag = 3;
+            strcpy(msg.message, "You Are Already Login System!");
+            chat_send(msg, fd);
+            close(fd);
+            continue;
         }
-    //printf("%d\n", port);
+        msg.flag = 2;
+        strcpy(msg.message, "Welcome to this chat room!");
+        chat_send(msg.message, fd);
+
+        int sub;
+        sub = find_sub();
+        client[sub].online = 1; // 1是在线
+        client[sub].fd = fd;
+        strcpy(client[sub].name, recvmsg.msg.from); 
+        pthread_create(&client[sub].tid, NULL, work, (void *)&sub);
+              
+        //printf("%d\n", port);
     }
     
 

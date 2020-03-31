@@ -14,7 +14,7 @@ char *get_value(char *path, char *key) {
     size_t linecap;
     if (path == NULL || key == NULL) {
         fprintf(stderr, "Error in argument!\n");
-        return -1;
+        return NULL;
     }
     if ((fp = fopen(path, "r")) == NULL) {
         perror("fopen");
