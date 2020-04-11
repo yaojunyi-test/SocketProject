@@ -20,4 +20,5 @@
 #include <stdbool.h>
 #include <string.h>
 #include <signal.h>
+#include <pthread.h>
 #endif
